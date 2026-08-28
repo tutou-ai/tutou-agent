@@ -1,0 +1,6 @@
+GitHub SSH bağlantı testi
+
+Hesap: tutou-ai
+Makine: tutou-office-server
+Oluşturulma zamanı: 2026-08-28T16:13:55+08:00
+Amaç: SSH üzerinden clone, commit ve push erişimini doğrulamak.
