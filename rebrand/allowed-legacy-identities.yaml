@@ -1,0 +1,115 @@
+schema_version: 1
+policy:
+  path_style: repository-relative-posix
+  default: deny
+  matching: path-and-token-must-both-match
+  review_required_for_new_entries: true
+
+exceptions:
+  - id: legal-mit-attribution
+    category: legal
+    path_regex: '^(?:LICENSE|(?:[^/]+/)*LICENSE)$'
+    token_regex: 'Copyright \(c\) 20[0-9]{2} Nous Research'
+    reason: Required upstream MIT copyright attribution; not a product identity.
+    owner: legal
+    permanence: permanent
+    positive_examples:
+      - {path: LICENSE, token: 'Copyright (c) 2025 Nous Research'}
+    negative_examples:
+      - {path: README.md, token: 'Copyright (c) 2025 Nous Research'}
+
+  - id: upstream-provenance
+    category: provenance
+    path_regex: '^UPSTREAM\.md$'
+    token_regex: '(?i:(?:Hermes Agent|NousResearch/hermes-agent|hermes-agent\.nousresearch\.com|git@github\.com:NousResearch/hermes-agent))'
+    reason: Dedicated provenance document records the imported upstream and license.
+    owner: release-engineering
+    permanence: permanent
+    positive_examples:
+      - {path: UPSTREAM.md, token: NousResearch/hermes-agent}
+    negative_examples:
+      - {path: README.md, token: NousResearch/hermes-agent}
+
+  - id: nous-hermes-model-runtime
+    category: external-model-name
+    path_regex: '^(?:agent/(?:agent_init|model_metadata)\.py|tutou_cli/model_switch\.py)$'
+    token_regex: '(?i:(?:Nous(?:Research| Research)?[/ ]+)?Hermes[- ]?(?:2|3|4)(?:\.[0-9]+)?(?:[-/.][A-Za-z0-9._+-]+)*)'
+    reason: External Nous model-family names are third-party API identifiers and remain byte-exact.
+    owner: model-integrations
+    permanence: permanent
+    positive_examples:
+      - {path: agent/model_metadata.py, token: NousResearch/Hermes-3-Llama-3.1-70B}
+    negative_examples:
+      - {path: agent/model_metadata.py, token: Hermes Agent}
+
+  - id: nous-hermes-model-tests
+    category: external-model-name
+    path_regex: '^tests/(?:agent/test_(?:agent_init|model_metadata|.*hermes_model.*)\.py|tutou_cli/test_(?:nous_hermes_non_agentic|aux_config|fallback_cmd)\.py|cli/test_cli_init\.py|gateway/test_fallback_chain_reload\.py)$'
+    token_regex: '(?i:(?:Nous(?:Research| Research)?[/ ]+)?Hermes[- ]?(?:2|3|4)(?:\.[0-9]+)?(?:[-/.][A-Za-z0-9._+-]+)*)'
+    reason: Fixtures assert external Nous model identifier handling.
+    owner: model-integrations
+    permanence: permanent
+    positive_examples:
+      - {path: tests/agent/test_model_metadata.py, token: Hermes-4-405B}
+    negative_examples:
+      - {path: tests/agent/test_model_metadata.py, token: Hermes Agent}
+
+  - id: nous-hermes-model-docs
+    category: external-model-name
+    path_regex: '^website/(?:docs|i18n/[^/]+/docusaurus-plugin-content-docs/current)/(?:integrations/(?:providers|nous-portal)|guides/run-tutou-with-nous-portal|user-guide/features/subscription-proxy)\.md$'
+    token_regex: '(?i:(?:Nous(?: Research)?(?:''s)?[ /]+)?Hermes[- ]?(?:2|3|4)(?:\.[0-9]+)?(?:[-/.][A-Za-z0-9._+-]+)*)'
+    reason: Documentation names versioned external Nous Hermes model IDs, never product branding.
+    owner: model-integrations
+    permanence: permanent
+    positive_examples:
+      - {path: website/docs/integrations/providers.md, token: Hermes-4-70B}
+    negative_examples:
+      - {path: website/docs/integrations/providers.md, token: Hermes Agent}
+
+  - id: historical-upstream-issue-citation
+    category: historical-citation
+    path_regex: '^.+\.(?:py|pyi|ts|tsx|js|mjs|cjs|md|rst|yaml|yml|json|toml|sh|ps1|nix)$'
+    token_regex: 'https://github\.com/NousResearch/hermes-agent/(?:issues|pull)/[0-9]+(?:#[A-Za-z0-9._-]+)?'
+    reason: Immutable historical issue and pull citations preserve engineering context.
+    owner: maintainers
+    permanence: permanent
+    positive_examples:
+      - {path: agent/example.py, token: 'https://github.com/NousResearch/hermes-agent/issues/123'}
+    negative_examples:
+      - {path: agent/example.py, token: 'https://github.com/NousResearch/hermes-agent'}
+
+  - id: isolated-legacy-migration-runtime
+    category: migration-recognition
+    path_regex: '^(?:tutou_cli/legacy_identity_migration\.py|apps/desktop/electron/legacy-identity-migration\.ts)$'
+    token_regex: '(?:Hermes Agent|HERMES_[A-Z0-9_]+|__HERMES_[A-Z0-9_]+|hermes(?:-agent|-acp)?|hermes_cli(?:\.[A-Za-z_][A-Za-z0-9_]*)?|hermes_(?:agent|bootstrap|constants|logging|state(?:_[a-z]+)?|time)|@hermes(?:-agent)?/[a-z0-9_-]+|~/\.hermes|%LOCALAPPDATA%\\hermes|hermes://|X-Hermes-[A-Za-z0-9-]+|com\.nousresearch\.hermes(?:\.setup)?)'
+    reason: One isolated boundary may recognize legacy installations solely for tested one-way migration.
+    owner: migration
+    permanence: temporary
+    positive_examples:
+      - {path: tutou_cli/legacy_identity_migration.py, token: HERMES_HOME}
+    negative_examples:
+      - {path: tutou_cli/main.py, token: HERMES_HOME}
+
+  - id: isolated-legacy-migration-tests
+    category: migration-recognition
+    path_regex: '^tests/(?:tutou_cli/test_legacy_identity_migration\.py|apps/desktop/electron/legacy-identity-migration\.test\.ts)$'
+    token_regex: '(?:Hermes Agent|HERMES_[A-Z0-9_]+|__HERMES_[A-Z0-9_]+|hermes(?:-agent|-acp)?|hermes_cli(?:\.[A-Za-z_][A-Za-z0-9_]*)?|hermes_(?:agent|bootstrap|constants|logging|state(?:_[a-z]+)?|time)|@hermes(?:-agent)?/[a-z0-9_-]+|~/\.hermes|%LOCALAPPDATA%\\hermes|hermes://|X-Hermes-[A-Za-z0-9-]+|com\.nousresearch\.hermes(?:\.setup)?)'
+    reason: Tests prove migration recognition without permitting legacy identities in normal runtime paths.
+    owner: migration
+    permanence: temporary
+    positive_examples:
+      - {path: tests/tutou_cli/test_legacy_identity_migration.py, token: hermes-agent}
+    negative_examples:
+      - {path: tests/tutou_cli/test_main.py, token: hermes-agent}
+
+  - id: rebrand-control-plane
+    category: migration-recognition
+    path_regex: '^rebrand/(?:identity-map|allowed-legacy-identities)\.yaml$'
+    token_regex: '(?i:hermes(?:[ _./:@-][A-Za-z0-9_*${}%\\.-]+)*)'
+    reason: Scanner control files must name forbidden legacy tokens to replace and detect them.
+    owner: rebrand
+    permanence: permanent
+    positive_examples:
+      - {path: rebrand/identity-map.yaml, token: hermes-agent}
+    negative_examples:
+      - {path: README.md, token: hermes-agent}

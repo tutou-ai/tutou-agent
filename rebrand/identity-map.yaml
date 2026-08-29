@@ -1,0 +1,137 @@
+schema_version: 1
+policy:
+  tracked_text_only: true
+  longest_match_first: true
+  path_changes_use_git_mv: true
+  binary_replacement_forbidden: true
+  generated_outputs_rebuilt_from_source: true
+  allowlist: rebrand/allowed-legacy-identities.yaml
+
+product:
+  display_name: Tutou Agent
+  short_name: Tutou
+  distribution: tutou-agent
+  cli: tutou
+  acp_cli: tutou-acp
+  gateway_cli: tutou-gateway
+  repository: https://github.com/tutou-ai/tutou-agent
+  website: https://agent.tutou.ai
+  home_env: TUTOU_HOME
+  home_dir: ~/.tutou
+  desktop_bundle_id: ai.tutou.agent
+  protocol_scheme: tutou
+
+replacement_order:
+  - url_authorities
+  - desktop_and_bundle_ids
+  - protocol_and_headers
+  - service_and_process_names
+  - home_and_state_paths
+  - user_facing_environment
+  - python_namespaces
+  - package_and_commands
+  - display_identity
+
+url_authorities:
+  - from: https://github.com/NousResearch/hermes-agent
+    to: https://github.com/tutou-ai/tutou-agent
+    preserve_suffix: true
+  - from: git@github.com:NousResearch/hermes-agent.git
+    to: git@github.com:tutou-ai/tutou-agent.git
+  - from: https://hermes-agent.nousresearch.com
+    to: https://agent.tutou.ai
+    preserve_suffix: true
+  - from: https://setup.hermes-agent.nousresearch.com
+    to: https://agent.tutou.ai
+    preserve_suffix: true
+
+package_and_commands:
+  - {from: hermes-agent, to: tutou-agent}
+  - {from: HERMES_AGENT, to: TUTOU_AGENT}
+  - {from: hermes-acp, to: tutou-acp}
+  - {from: HERMES_ACP, to: TUTOU_ACP}
+  - {from: hermes-gateway, to: tutou-gateway}
+  - {from: HERMES_GATEWAY, to: TUTOU_GATEWAY}
+  - {from: hermes-setup, to: tutou-setup}
+  - {from: HERMES_SETUP, to: TUTOU_SETUP}
+  - {from: hermes, to: tutou}
+  - {from: HERMES, to: TUTOU}
+
+python_namespaces:
+  - {from: hermes_cli, to: tutou_cli}
+  - {from: hermes_state_portability, to: tutou_state_portability}
+  - {from: hermes_state_common, to: tutou_state_common}
+  - {from: hermes_state_schema, to: tutou_state_schema}
+  - {from: hermes_state_search, to: tutou_state_search}
+  - {from: hermes_state, to: tutou_state}
+  - {from: hermes_constants, to: tutou_constants}
+  - {from: hermes_bootstrap, to: tutou_bootstrap}
+  - {from: hermes_logging, to: tutou_logging}
+  - {from: hermes_time, to: tutou_time}
+  - {from: hermes_tools, to: tutou_tools}
+
+service_and_process_names:
+  - {from: hermes-kanban-dispatcher, to: tutou-kanban-dispatcher}
+  - {from: hermes-gateway.service, to: tutou-gateway.service}
+  - {from: hermes.service, to: tutou.service}
+  - {from: main-hermes, to: main-tutou}
+  - {from: hermes-desktop, to: tutou-desktop}
+  - {from: Hermes.exe, to: Tutou.exe}
+
+protocol_and_headers:
+  - {from: 'hermes://', to: 'tutou://'}
+  - {from: X-Hermes-, to: X-Tutou-}
+  - {from: x-hermes-, to: x-tutou-}
+  - {from: hermes.session, to: tutou.session}
+  - {from: hermes.event, to: tutou.event}
+  - {from: hermes.monitoring, to: tutou.monitoring}
+
+home_and_state_paths:
+  - {from: '~/.hermes', to: '~/.tutou'}
+  - {from: .hermes, to: .tutou}
+  - {from: /var/lib/hermes, to: /var/lib/tutou}
+  - {from: /run/hermes, to: /run/tutou}
+  - {from: hermes_home, to: tutou_home}
+
+user_facing_environment:
+  prefix:
+    from: HERMES_
+    to: TUTOU_
+  explicit:
+    - {from: HERMES_HOME, to: TUTOU_HOME}
+    - {from: HERMES_PROFILE, to: TUTOU_PROFILE}
+    - {from: HERMES_SESSION_ID, to: TUTOU_SESSION_ID}
+    - {from: HERMES_GATEWAY_LOCK_DIR, to: TUTOU_GATEWAY_LOCK_DIR}
+    - {from: HERMES_DESKTOP_CHILD_PID, to: TUTOU_DESKTOP_CHILD_PID}
+
+desktop_and_bundle_ids:
+  - {from: com.nousresearch.hermes.setup, to: ai.tutou.agent.setup}
+  - {from: com.nousresearch.hermes, to: ai.tutou.agent}
+  - {from: '@hermes-agent/', to: '@tutou-agent/'}
+  - {from: '@hermes/', to: '@tutou/'}
+  - {from: __HERMES_, to: __TUTOU_}
+
+display_identity:
+  - {from: Hermes Agent, to: Tutou Agent}
+  - {from: HERMES AGENT, to: TUTOU AGENT}
+  - {from: hermes agent, to: tutou agent}
+  - {from: Hermes, to: Tutou}
+
+verification:
+  forbidden_active_patterns:
+    - '(?i)hermes-agent'
+    - '\bHERMES_[A-Z0-9_]+'
+    - '\bhermes_cli\b'
+    - '\bhermes_(?:state|constants|bootstrap|logging|time)\b'
+    - '(?i)https?://(?:setup\.)?hermes-agent\.nousresearch\.com'
+    - '(?i)github\.com/NousResearch/hermes-agent'
+  required_active_patterns:
+    - Tutou Agent
+    - tutou-agent
+    - TUTOU_HOME
+    - https://agent.tutou.ai
+
+notes:
+  - Legal copyright, dedicated UPSTREAM provenance, external Nous Hermes model IDs, and historical issue citations are controlled by the allowlist and are never replacement targets.
+  - Legacy identities may appear only in isolated one-way migration code and its tests.
+  - Wakeword models and branded images require real regenerated assets; filename changes alone are forbidden.
