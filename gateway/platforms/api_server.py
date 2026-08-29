@@ -251,7 +251,7 @@ def _hermes_version() -> str:
     try:
         from importlib.metadata import version
 
-        return version("hermes-agent")
+        return version("tutou-agent")
     except Exception:
         return "dev"
 

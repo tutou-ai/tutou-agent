@@ -27,6 +27,8 @@ ACCEPT = [
     "hermes-gateway.exe",
     "hermes gateway",          # bare `hermes gateway` defaults to run
     "hermes gateway run",
+    "tutou gateway",           # bare `tutou gateway` has the same runtime
+    "tutou gateway run",
     # profile selector AFTER the `gateway` token (argv is profile-position
     # agnostic — _apply_profile_override strips --profile/-p anywhere)
     "hermes gateway --profile work run",
@@ -48,6 +50,7 @@ REJECT = [
     "python -m hermes_cli.main gateway stop",
     "python -m hermes_cli.main --profile x dashboard",    # non-gateway subcommand
     "some random python -m mygateway thing",
+    "python /tmp/unrelated.py tutou gateway run",
     "",
     None,
 ]
@@ -56,5 +59,10 @@ REJECT = [
 @pytest.mark.parametrize("cmd", ACCEPT)
 def test_accepts_real_gateway_run(cmd):
     assert matches(cmd) is True
+
+
+@pytest.mark.parametrize("cmd", REJECT)
+def test_rejects_non_gateway_runtime(cmd):
+    assert matches(cmd) is False
 
 

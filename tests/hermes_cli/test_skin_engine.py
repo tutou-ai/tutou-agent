@@ -24,6 +24,25 @@ class TestSkinConfig:
         assert "banner_border" in skin.colors
         assert "agent_name" in skin.branding
 
+    def test_default_skin_uses_tutou_agent_branding(self):
+        from hermes_cli.skin_engine import load_skin
+
+        skin = load_skin("default")
+
+        assert skin.get_branding("agent_name") == "Tutou Agent"
+        assert "Tutou Agent" in skin.get_branding("welcome")
+        assert "Tutou" in skin.get_branding("response_label")
+
+    @pytest.mark.parametrize("skin_name", ["mono", "slate", "daylight", "warm-lightmode"])
+    def test_neutral_builtin_skins_keep_tutou_agent_branding(self, skin_name):
+        from hermes_cli.skin_engine import load_skin
+
+        skin = load_skin(skin_name)
+
+        assert skin.get_branding("agent_name") == "Tutou Agent"
+        assert "Tutou Agent" in skin.get_branding("welcome")
+        assert "Tutou" in skin.get_branding("response_label")
+
 
     def test_get_spinner_wings_empty_for_default(self):
         from hermes_cli.skin_engine import load_skin
@@ -143,7 +162,7 @@ class TestUserSkins:
 
         assert skin.name == "broken"
         assert skin.get_color("banner_title") == "#FFD700"
-        assert skin.get_branding("agent_name") == "Hermes Agent"
+        assert skin.get_branding("agent_name") == "Tutou Agent"
         assert skin.spinner.get("waiting_faces", []) == []
         assert skin.tool_emojis == {}
         assert skin.tool_prefix == "!"

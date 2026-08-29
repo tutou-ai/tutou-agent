@@ -451,6 +451,7 @@ class TestDeleteProfile:
                             "--profile", "coder", "serve"]),
             FakeProc(302, ["/usr/bin/python3", "/Users/x/scripts/hermes-unrelated-tool",
                             "--profile", "coder", "serve"]),
+            FakeProc(303, ["hermes-notes", "--profile", "coder", "serve"]),
         ]
 
         fake_psutil = types.SimpleNamespace(
@@ -466,10 +467,8 @@ class TestDeleteProfile:
         assert pids == []
 
     def test_backend_scan_matches_all_known_console_script_shims(self, profile_env, monkeypatch):
-        """The other two real console-script entry points (hermes-agent,
-        hermes-acp -- see pyproject.toml [project.scripts]) must also be
-        recognized via the shebang-exec path, not just the primary "hermes"
-        shim.
+        """All legacy and Tutou console-script entry points must be recognized
+        via the shebang-exec path declared by pyproject.toml [project.scripts].
         """
         create_profile("coder", no_alias=True)
         profile_dir = get_profile_dir("coder")
@@ -494,6 +493,12 @@ class TestDeleteProfile:
                             "--profile", "coder", "serve"]),
             FakeProc(402, ["/usr/bin/python3", "/Users/x/.local/bin/hermes-acp",
                             "--profile", "coder", "serve"]),
+            FakeProc(403, ["/usr/bin/python3", "/Users/x/.local/bin/tutou",
+                            "--profile", "coder", "serve"]),
+            FakeProc(404, ["/usr/bin/python3", "/Users/x/.local/bin/tutou-agent",
+                            "--profile", "coder", "serve"]),
+            FakeProc(405, ["/usr/bin/python3", "/Users/x/.local/bin/tutou-acp",
+                            "--profile", "coder", "serve"]),
         ]
 
         fake_psutil = types.SimpleNamespace(
@@ -506,7 +511,7 @@ class TestDeleteProfile:
         monkeypatch.setitem(sys.modules, "psutil", fake_psutil)
 
         pids = profiles._profile_bound_backend_pids("coder", profile_dir)
-        assert set(pids) == {401, 402}
+        assert set(pids) == {401, 402, 403, 404, 405}
 
 
 # ===================================================================

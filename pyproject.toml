@@ -1,9 +1,9 @@
 
 
 [project]
-name = "hermes-agent"
+name = "tutou-agent"
 version = "0.20.6"
-description = "The self-improving AI agent — creates skills from experience, improves them during use, and runs anywhere"
+description = "Tutou Agent — a Hermes-based, self-improving AI agent that learns through skills and runs anywhere"
 readme = "README.md"
 # Upper bound is load-bearing, not cosmetic. uv resolves the project's
 # Python from `requires-python`, and an inherited `UV_PYTHON` env var (or a
@@ -13,7 +13,7 @@ readme = "README.md"
 # <3.14 makes uv refuse 3.14 with a clear error instead of attempting that
 # build. Raise the ceiling once our Rust transitives ship cp314 wheels.
 requires-python = ">=3.11,<3.14"
-authors = [{ name = "Nous Research" }]
+authors = [{ name = "兔投科技" }]
 license = "MIT"
 license-files = ["LICENSE"]
 dependencies = [
@@ -301,22 +301,22 @@ azure-identity = ["azure-identity==1.25.3"]
 termux = [
   # Baseline Android / Termux path for reliable fresh installs.
   "python-telegram-bot[webhooks]==22.8",
-  "hermes-agent[cron]",
-  "hermes-agent[mcp]",
-  "hermes-agent[honcho]",
-  "hermes-agent[acp]",
+  "tutou-agent[cron]",
+  "tutou-agent[mcp]",
+  "tutou-agent[honcho]",
+  "tutou-agent[acp]",
 ]
 termux-all = [
   # Best-effort "install all" profile for Termux. Same policy as [all]:
   # only includes extras that aren't covered by `tools/lazy_deps.py`.
   # Backends like telegram/slack/dingtalk/feishu/honcho lazy-install at
   # first use, so they're no longer eager-installed here.
-  "hermes-agent[termux]",
-  "hermes-agent[google]",
-  "hermes-agent[homeassistant]",
-  "hermes-agent[sms]",
-  "hermes-agent[web]",
-  "hermes-agent[pty]",
+  "tutou-agent[termux]",
+  "tutou-agent[google]",
+  "tutou-agent[homeassistant]",
+  "tutou-agent[sms]",
+  "tutou-agent[web]",
+  "tutou-agent[pty]",
 ]
 dingtalk = ["dingtalk-stream==0.24.3", "alibabacloud-dingtalk==2.2.42", "qrcode==7.4.2"]
 feishu = ["lark-oapi==1.6.8", "qrcode==7.4.2"]
@@ -369,15 +369,15 @@ all = [
   # [all], `uv sync --locked` on Windows tried to build it from sdist
   # and failed on `make`. Lazy-install routes that build to first use,
   # where the user is expected to have a toolchain available.
-  "hermes-agent[cron]",
-  "hermes-agent[pty]",
-  "hermes-agent[mcp]",
-  "hermes-agent[homeassistant]",
-  "hermes-agent[sms]",
-  "hermes-agent[acp]",
-  "hermes-agent[google]",
-  "hermes-agent[web]",
-  "hermes-agent[youtube]",
+  "tutou-agent[cron]",
+  "tutou-agent[pty]",
+  "tutou-agent[mcp]",
+  "tutou-agent[homeassistant]",
+  "tutou-agent[sms]",
+  "tutou-agent[acp]",
+  "tutou-agent[google]",
+  "tutou-agent[web]",
+  "tutou-agent[youtube]",
 ]
 
 [build-system]
@@ -385,6 +385,11 @@ requires = ["setuptools==83.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project.scripts]
+tutou = "hermes_cli.main:main"
+tutou-agent = "run_agent:main"
+tutou-acp = "acp_adapter.entry:main"
+# Preserve upstream command names as compatibility aliases while the fork is
+# rebranded incrementally; removing them would break existing Hermes workflows.
 hermes = "hermes_cli.main:main"
 hermes-agent = "run_agent:main"
 hermes-acp = "acp_adapter.entry:main"

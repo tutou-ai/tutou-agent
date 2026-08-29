@@ -155,9 +155,20 @@ def test_delivery_lock_recognizes_resolved_cli_paths(tmp_path, monkeypatch):
         ["C:\\venv\\Scripts\\hermes.exe", "-p", "ops", "chat"], stdin_file=False
     ):
         pass
-    assert acquired == ["locked", "locked", "locked"]
+    with bot_mode_dm._delivery_lock(
+        [str(tmp_path / "venv" / "bin" / "tutou"), "-p", "ops", "chat"],
+        stdin_file=False,
+    ):
+        pass
+    with bot_mode_dm._delivery_lock(["tutou", "-p", "ops", "chat"], stdin_file=False):
+        pass
+    with bot_mode_dm._delivery_lock(
+        ["C:\\venv\\Scripts\\tutou.exe", "-p", "ops", "chat"], stdin_file=False
+    ):
+        pass
+    assert acquired == ["locked"] * 6
 
     # Unrelated argvs still bypass the lock entirely.
     with bot_mode_dm._delivery_lock(["python", "-m", "whatever"], stdin_file=False):
         pass
-    assert acquired == ["locked", "locked", "locked"]
+    assert acquired == ["locked"] * 6

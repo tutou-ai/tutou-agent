@@ -462,6 +462,8 @@ def show_status(args):
         daytona_image = os.getenv("TERMINAL_DAYTONA_IMAGE", "nikolaik/python-nodejs:python3.11-nodejs20")
         print(f"  Daytona Image: {daytona_image}")
     elif terminal_env == "vercel_sandbox":
+        from hermes_cli.install_hints import optional_extra_install_hint
+
         runtime = os.getenv("TERMINAL_VERCEL_RUNTIME") or terminal_cfg.get("vercel_runtime") or "node24"
         persist = os.getenv("TERMINAL_CONTAINER_PERSISTENT")
         if persist is None:
@@ -470,7 +472,11 @@ def show_status(args):
             persist_enabled = persist.lower() in {"1", "true", "yes", "on"}
         auth_status = describe_vercel_auth()
         sdk_ok = importlib.util.find_spec("vercel") is not None
-        sdk_label = "installed" if sdk_ok else "missing (install: pip install 'hermes-agent[vercel]')"
+        sdk_label = (
+            "installed"
+            if sdk_ok
+            else f"missing ({optional_extra_install_hint('vercel')})"
+        )
         print(f"  Runtime:      {runtime}")
         print(f"  SDK:          {check_mark(sdk_ok)} {sdk_label}")
         print(f"  Auth:         {check_mark(auth_status.ok)} {auth_status.label}")

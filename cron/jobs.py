@@ -1201,8 +1201,8 @@ def compute_next_run(schedule: Dict[str, Any], last_run_at: Optional[str] = None
             logger.warning(
                 "Cannot compute next run for cron schedule %r: 'croniter' is "
                 "not installed. croniter is a core dependency as of v0.9.x; "
-                "reinstall hermes-agent or run 'pip install croniter' in your "
-                "runtime env.",
+                "run 'uv sync' from the Tutou Agent checkout or install croniter "
+                "in the active runtime environment.",
                 expr,
             )
             return None

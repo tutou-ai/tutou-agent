@@ -434,10 +434,12 @@ class WhatsAppCloudAdapter(WhatsAppBehaviorMixin, BasePlatformAdapter):
     # ------------------------------------------------------------------ lifecycle
     async def connect(self, *, is_reconnect: bool = False) -> bool:
         if not check_whatsapp_cloud_requirements():
+            from hermes_cli.install_hints import optional_extra_install_hint
+
             self._set_fatal_error(
                 "whatsapp_cloud_deps_missing",
                 "aiohttp and httpx are required for whatsapp_cloud — "
-                "reinstall hermes-agent.",
+                f"{optional_extra_install_hint('messaging')}.",
                 retryable=False,
             )
             return False

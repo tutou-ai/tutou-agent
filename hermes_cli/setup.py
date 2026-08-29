@@ -1651,9 +1651,12 @@ def setup_terminal_backend(config: dict):
         )
 
     elif selected_backend == "vercel_sandbox":
+        from hermes_cli.install_hints import optional_extra_install_hint
+
+        install_hint = optional_extra_install_hint("vercel")
         print_success("Terminal backend: Vercel Sandbox")
         print_info("Cloud microVM sandboxes with snapshot-backed filesystem persistence.")
-        print_info("Requires the optional SDK: pip install 'hermes-agent[vercel]'")
+        print_info(f"Requires the optional SDK; {install_hint}")
 
         try:
             __import__("vercel")
@@ -1684,7 +1687,7 @@ def setup_terminal_backend(config: dict):
             if result.returncode == 0:
                 print_success("vercel SDK installed")
             else:
-                print_warning("Install failed — run manually: pip install 'hermes-agent[vercel]'")
+                print_warning(f"Install failed — {install_hint}")
                 if result.stderr:
                     print_info(f"  Error: {result.stderr.strip().splitlines()[-1]}")
 

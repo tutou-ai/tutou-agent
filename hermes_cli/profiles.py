@@ -1528,7 +1528,9 @@ def _profile_bound_backend_pids(canon: str, profile_dir: Path) -> list[int]:
     # a known shim identity rather than a loose prefix match, since argv[1]
     # can be ANY user-invoked python script path when argv[0] is a bare
     # interpreter.
-    _HERMES_CONSOLE_SCRIPT_NAMES = frozenset({"hermes", "hermes-agent", "hermes-acp"})
+    _HERMES_CONSOLE_SCRIPT_NAMES = frozenset(
+        {"tutou", "tutou-agent", "tutou-acp", "hermes", "hermes-agent", "hermes-acp"}
+    )
     pids: list[int] = []
 
     for proc in psutil.process_iter(["pid", "name", "username", "cmdline"]):
@@ -1552,8 +1554,7 @@ def _profile_bound_backend_pids(canon: str, profile_dir: Path) -> list[int]:
             exe_name = os.path.basename(argv[0]).lower()
             is_hermes = (
                 any(marker in joined for marker in hermes_markers)
-                or exe_name == "hermes"
-                or exe_name.startswith("hermes")
+                or exe_name in _HERMES_CONSOLE_SCRIPT_NAMES
             )
             if not is_hermes and len(argv) >= 2 and _python_interpreter_re.match(exe_name):
                 # Match against the actual known console-script entry points

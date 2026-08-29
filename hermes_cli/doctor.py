@@ -2423,10 +2423,13 @@ def run_doctor(args):
         if importlib.util.find_spec("vercel") is not None:
             check_ok("vercel SDK", "(installed)")
         else:
+            from hermes_cli.install_hints import optional_extra_install_hint
+
+            install_hint = optional_extra_install_hint("vercel")
             _fail_and_issue(
                 "vercel SDK not installed",
-                "(pip install 'hermes-agent[vercel]')",
-                "Install the Vercel optional dependency: pip install 'hermes-agent[vercel]'",
+                f"({install_hint})",
+                f"Install the Vercel optional dependency; {install_hint}",
                 issues,
             )
 

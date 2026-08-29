@@ -88,48 +88,48 @@ def _inherited_flag(parser, *args, **kwargs):
 
 _EPILOGUE = """
 Examples:
-    hermes                        Start interactive chat
-    hermes chat -q "Hello"        Single query mode
-    hermes --tui                  Launch the modern TUI (or set display.interface: tui)
-    hermes --cli                  Force the classic REPL (overrides display.interface: tui)
-    hermes -c                     Resume the most recent session
-    hermes -c "my project"        Resume a session by name (latest in lineage)
-    hermes --resume <session_id>  Resume a specific session by ID
-    hermes --resume latest        Resume the most recent session (same as -c)
-    hermes --tui --resume latest --in ./dir   Resume ./dir's latest session in the TUI
-    hermes setup                  Run setup wizard
-    hermes logout                 Clear stored authentication
-    hermes auth add <provider>    Add a pooled credential
-    hermes auth list              List pooled credentials
-    hermes auth remove <p> <t>    Remove pooled credential by index, id, or label
-    hermes auth reset <provider>  Clear exhaustion status for a provider
-    hermes model                  Select default model
-    hermes fallback [list]        Show fallback provider chain
-    hermes fallback add           Add a fallback provider (same picker as `hermes model`)
-    hermes fallback remove        Remove a fallback provider from the chain
-    hermes config                 View configuration
-    hermes config edit            Edit config in $EDITOR
-    hermes config set model gpt-4 Set a config value
-    hermes gateway                Run messaging gateway
-    hermes -s hermes-agent-dev,github-auth
-    hermes -w                     Start in isolated git worktree
-    hermes gateway install        Install gateway background service
-    hermes sessions list          List past sessions
-    hermes sessions browse        Interactive session picker
-    hermes sessions rename ID T   Rename/title a session
-    hermes logs                   View agent.log (last 50 lines)
-    hermes logs -f                Follow agent.log in real time
-    hermes logs errors            View errors.log
-    hermes logs --since 1h        Lines from the last hour
-    hermes debug share             Upload debug report for support
-    hermes console                Open the safe Hermes command console
-    hermes update                 Update to latest version
-    hermes dashboard              Start web UI dashboard (port 9119)
-    hermes dashboard --stop       Stop running dashboard processes
-    hermes dashboard --status     List running dashboard processes
+    tutou                        Start interactive chat
+    tutou chat -q "Hello"        Single query mode
+    tutou --tui                  Launch the modern TUI (or set display.interface: tui)
+    tutou --cli                  Force the classic REPL (overrides display.interface: tui)
+    tutou -c                     Resume the most recent session
+    tutou -c "my project"        Resume a session by name (latest in lineage)
+    tutou --resume <session_id>  Resume a specific session by ID
+    tutou --resume latest        Resume the most recent session (same as -c)
+    tutou --tui --resume latest --in ./dir   Resume ./dir's latest session in the TUI
+    tutou setup                  Run setup wizard
+    tutou logout                 Clear stored authentication
+    tutou auth add <provider>    Add a pooled credential
+    tutou auth list              List pooled credentials
+    tutou auth remove <p> <t>    Remove pooled credential by index, id, or label
+    tutou auth reset <provider>  Clear exhaustion status for a provider
+    tutou model                  Select default model
+    tutou fallback [list]        Show fallback provider chain
+    tutou fallback add           Add a fallback provider (same picker as `tutou model`)
+    tutou fallback remove        Remove a fallback provider from the chain
+    tutou config                 View configuration
+    tutou config edit            Edit config in $EDITOR
+    tutou config set model gpt-4 Set a config value
+    tutou gateway                Run messaging gateway
+    tutou -s hermes-agent-dev,github-auth
+    tutou -w                     Start in isolated git worktree
+    tutou gateway install        Install gateway background service
+    tutou sessions list          List past sessions
+    tutou sessions browse        Interactive session picker
+    tutou sessions rename ID T   Rename/title a session
+    tutou logs                   View agent.log (last 50 lines)
+    tutou logs -f                Follow agent.log in real time
+    tutou logs errors            View errors.log
+    tutou logs --since 1h        Lines from the last hour
+    tutou debug share             Upload debug report for support
+    tutou console                Open the safe command console
+    tutou update                 Update to latest version
+    tutou dashboard              Start web UI dashboard (port 9119)
+    tutou dashboard --stop       Stop running dashboard processes
+    tutou dashboard --status     List running dashboard processes
 
 For more help on a command:
-    hermes <command> --help
+    tutou <command> --help
 """
 
 
@@ -141,8 +141,8 @@ def build_top_level_parser():
     other subparsers via ``subparsers.add_parser(...)``.
     """
     parser = argparse.ArgumentParser(
-        prog="hermes",
-        description="Hermes Agent - AI assistant with tool-calling capabilities",
+        prog="tutou",
+        description="Tutou Agent - AI assistant with tool-calling capabilities",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=_EPILOGUE,
     )

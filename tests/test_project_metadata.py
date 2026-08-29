@@ -3,6 +3,13 @@
 from pathlib import Path
 import tomllib
 
+
+def _load_project():
+    pyproject_path = Path(__file__).resolve().parents[1] / "pyproject.toml"
+    with pyproject_path.open("rb") as handle:
+        return tomllib.load(handle)["project"]
+
+
 def _load_optional_dependencies():
     pyproject_path = Path(__file__).resolve().parents[1] / "pyproject.toml"
     with pyproject_path.open("rb") as handle:
@@ -15,6 +22,33 @@ def _load_package_data():
     with pyproject_path.open("rb") as handle:
         tool = tomllib.load(handle)["tool"]
     return tool["setuptools"]["package-data"]
+
+
+def test_distribution_uses_tutou_agent_name():
+    project = _load_project()
+
+    assert project["name"] == "tutou-agent"
+
+
+def test_tutou_cli_names_preserve_legacy_entrypoint_behavior():
+    scripts = _load_project()["scripts"]
+
+    assert scripts["tutou"] == scripts["hermes"] == "hermes_cli.main:main"
+    assert scripts["tutou-agent"] == scripts["hermes-agent"] == "run_agent:main"
+    assert scripts["tutou-acp"] == scripts["hermes-acp"] == "acp_adapter.entry:main"
+
+
+def test_self_referential_extras_use_tutou_distribution_name():
+    optional_dependencies = _load_optional_dependencies()
+
+    self_references = [
+        spec
+        for specs in optional_dependencies.values()
+        for spec in specs
+        if "-agent[" in spec
+    ]
+    assert self_references
+    assert all(spec.startswith("tutou-agent[") for spec in self_references)
 
 
 def test_matrix_extra_not_in_all():
@@ -57,6 +91,7 @@ def test_lazy_installable_extras_excluded_from_all():
     add it to `LAZY_DEPS` instead so it installs at first use.
     """
     optional_dependencies = _load_optional_dependencies()
+    project_name = _load_project()["name"]
 
     # Hard-coded mirror of the extras that are in LAZY_DEPS as of
     # 2026-05-12. This list intentionally duplicates rather than
@@ -79,7 +114,7 @@ def test_lazy_installable_extras_excluded_from_all():
     for extra in lazy_covered_extras:
         offending = [
             spec for spec in all_extra_specs
-            if f"hermes-agent[{extra}]" in spec
+            if f"{project_name}[{extra}]" in spec
         ]
         assert not offending, (
             f"[{extra}] is in [all] but also in LAZY_DEPS. "

@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 import tarfile
+import tomllib
 import zipfile
 from pathlib import Path
 
@@ -11,6 +12,8 @@ import pytest
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PROJECT_NAME = tomllib.loads((PROJECT_ROOT / "pyproject.toml").read_text())["project"]["name"]
+ARTIFACT_STEM = PROJECT_NAME.replace("-", "_")
 
 
 def _build_artifact(kind: str, tmp_path, *, nix_build: bool) -> subprocess.CompletedProcess[str]:
@@ -60,12 +63,12 @@ def test_artifact_build_rejects_nix_development_shell_environment(kind, tmp_path
     result = _build_artifact(kind, tmp_path, nix_build=False)
 
     assert result.returncode != 0
-    assert "Building wheels or sdists for hermes-agent is not supported" in result.stderr
+    assert f"Building wheels or sdists for {PROJECT_NAME} is not supported" in result.stderr
 
 
 @pytest.mark.parametrize(
     ("kind", "artifact_glob"),
-    [("sdist", "hermes_agent-*.tar.gz"), ("wheel", "hermes_agent-*.whl")],
+    [("sdist", f"{ARTIFACT_STEM}-*.tar.gz"), ("wheel", f"{ARTIFACT_STEM}-*.whl")],
 )
 def test_artifact_build_allows_explicit_nix_package_build_marker(kind, artifact_glob, tmp_path):
     result = _build_artifact(kind, tmp_path, nix_build=True)

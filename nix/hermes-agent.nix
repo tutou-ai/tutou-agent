@@ -159,7 +159,7 @@ let
   '';
 in
 stdenv.mkDerivation (finalAttrs: {
-  pname = "hermes-agent";
+  pname = "tutou-agent";
   version = (fromTOML (builtins.readFile ../pyproject.toml)).project.version;
 
   dontUnpack = true;
@@ -208,6 +208,9 @@ stdenv.mkDerivation (finalAttrs: {
           }
       '')
       [
+        "tutou"
+        "tutou-agent"
+        "tutou-acp"
         "hermes"
         "hermes-agent"
         "hermes-acp"
@@ -262,9 +265,9 @@ stdenv.mkDerivation (finalAttrs: {
     };
 
   meta = with lib; {
-    description = "AI agent with advanced tool-calling capabilities";
-    homepage = "https://github.com/NousResearch/hermes-agent";
-    mainProgram = "hermes";
+    description = "Tutou Agent — a Hermes-based AI agent with advanced tool-calling capabilities";
+    homepage = "https://github.com/tutou-ai/tutou-agent";
+    mainProgram = "tutou";
     license = licenses.mit;
     platforms = platforms.unix;
   };

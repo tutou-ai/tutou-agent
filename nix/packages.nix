@@ -53,6 +53,9 @@
             inherit (pkgs) npm-lockfile-fix;
           }).node-gyp;
         default = full;
+        tutou-agent = full;
+        # Compatibility alias for existing flake consumers.
+        hermes-agent = full;
 
         inherit sandbox;
 

@@ -25,6 +25,7 @@ import os
 import queue
 import random
 import re
+import shlex
 import sqlite3
 import sys
 import threading
@@ -4325,8 +4326,22 @@ def _read_proc_cmdline(pid: int) -> Optional[str]:
         return None
 
 
-_HERMES_CMDLINE_MARKERS = ("hermes_cli.main", "hermes_cli/main", "hermes serve",
-                           "hermes-agent", "hermes gateway", "hermes chat")
+_HERMES_CMDLINE_EXECUTABLES = frozenset(
+    {
+        "tutou",
+        "tutou.exe",
+        "tutou-agent",
+        "tutou-agent.exe",
+        "tutou-acp",
+        "tutou-acp.exe",
+        "hermes",
+        "hermes.exe",
+        "hermes-agent",
+        "hermes-agent.exe",
+        "hermes-acp",
+        "hermes-acp.exe",
+    }
+)
 
 
 def _looks_like_hermes(cmdline: str) -> bool:
@@ -4336,8 +4351,16 @@ def _looks_like_hermes(cmdline: str) -> bool:
     due to different user) should be treated as a potential state.db holder.
     We only flag processes that look like Hermes, not every system daemon.
     """
-    lower = cmdline.lower()
-    return any(marker in lower for marker in _HERMES_CMDLINE_MARKERS)
+    try:
+        raw_tokens = shlex.split(cmdline, posix=False)
+    except ValueError:
+        raw_tokens = cmdline.split()
+    tokens = [token.strip("\"'").replace("\\", "/").lower() for token in raw_tokens]
+    if any(token.rsplit("/", 1)[-1] in _HERMES_CMDLINE_EXECUTABLES for token in tokens):
+        return True
+    return "hermes_cli.main" in tokens or any(
+        token.endswith("/hermes_cli/main.py") for token in tokens
+    )
 
 
 # Lifecycle statuses surfaced by session pickers. Classification looks ONLY at

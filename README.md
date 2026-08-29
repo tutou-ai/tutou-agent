@@ -1,24 +1,31 @@
+# Tutou Agent ☤
+
+**Tutou Agent** is developed by **兔投科技** as a feature-compatible derivative
+of [Hermes Agent](https://github.com/NousResearch/hermes-agent). The foundation
+currently preserves the complete Hermes Agent feature set while Tutou-specific
+capabilities are introduced incrementally.
+
 <p align="center">
-  <img src="assets/banner.png" alt="Hermes Agent" width="100%">
+  <a href="https://github.com/tutou-ai/tutou-agent"><img src="https://img.shields.io/badge/Repository-tutou--ai%2Ftutou--agent-181717?style=for-the-badge&logo=github" alt="Tutou Agent repository"></a>
+  <a href="https://github.com/tutou-ai/tutou-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
+  <a href="https://hermes-agent.nousresearch.com/docs/"><img src="https://img.shields.io/badge/Upstream%20docs-Hermes%20Agent-FFD700?style=for-the-badge" alt="Upstream Hermes Agent documentation"></a>
 </p>
 
-# Hermes Agent ☤
-<p align="center">
-  <a href="https://hermes-agent.nousresearch.com/">Hermes Agent</a> | <a href="https://hermes-agent.nousresearch.com/">Hermes Desktop</a>
-</p>
-<p align="center">
-  <a href="https://hermes-agent.nousresearch.com/docs/"><img src="https://img.shields.io/badge/Docs-hermes--agent.nousresearch.com-FFD700?style=for-the-badge" alt="Documentation"></a>
-  <a href="https://discord.gg/NousResearch"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord"></a>
-  <a href="https://github.com/NousResearch/hermes-agent/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
-  <a href="https://nousresearch.com"><img src="https://img.shields.io/badge/Built%20by-Nous%20Research-blueviolet?style=for-the-badge" alt="Built by Nous Research"></a>
-  <a href="README.zh-CN.md"><img src="https://img.shields.io/badge/Lang-中文-red?style=for-the-badge" alt="中文"></a>
-  <a href="README.ur-pk.md"><img src="https://img.shields.io/badge/Lang-اردو-green?style=for-the-badge" alt="اردو"></a>
-  <a href="README.es.md"><img src="https://img.shields.io/badge/Lang-Español-orange?style=for-the-badge" alt="Español"></a>
-</p>
+> [!IMPORTANT]
+> This is the initial compatibility phase. The new commands are `tutou`,
+> `tutou-agent`, and `tutou-acp`. The upstream `hermes`, `hermes-agent`, and
+> `hermes-acp` command names remain available as compatibility aliases so the
+> inherited feature set continues to work during the rebrand.
 
-**The self-improving AI agent built by [Nous Research](https://nousresearch.com).** It's the only agent with a built-in learning loop — it creates skills from experience, improves them during use, nudges itself to persist knowledge, searches its own past conversations, and builds a deepening model of who you are across sessions. Run it on a $5 VPS, a GPU cluster, or serverless infrastructure that costs nearly nothing when idle. It's not tied to your laptop — talk to it from Telegram while it works on a cloud VM.
+The imported baseline is Hermes Agent commit
+[`ee742fe1bc828f6456659f67d27bdbeacdebbdd4`](https://github.com/NousResearch/hermes-agent/commit/ee742fe1bc828f6456659f67d27bdbeacdebbdd4).
+See [UPSTREAM.md](UPSTREAM.md) for provenance and synchronization policy.
 
-Use any model you want — [Nous Portal](https://portal.nousresearch.com), OpenRouter, OpenAI, your own endpoint, and [many others](https://hermes-agent.nousresearch.com/docs/integrations/providers). Switch with `hermes model` — no code changes, no lock-in.
+Tutou Agent inherits Hermes Agent's learning loop, skills, persistent memory,
+session search, messaging gateway, cron scheduling, delegation, terminal and
+browser tools, desktop/TUI surfaces, provider support, and remote execution
+backends. The sections below retain upstream terminology where compatibility
+work has not yet been renamed.
 
 <table>
 <tr><td><b>A real terminal interface</b></td><td>Full TUI with multiline editing, slash-command autocomplete, conversation history, interrupt-and-redirect, and streaming tool output.</td></tr>
@@ -32,7 +39,26 @@ Use any model you want — [Nous Portal](https://portal.nousresearch.com), OpenR
 
 ---
 
-## Quick Install
+## Development Install
+
+Tutou Agent does not have a standalone installer or package release yet. Install
+this repository directly while the compatibility foundation is being built:
+
+```bash
+git clone https://github.com/tutou-ai/tutou-agent.git
+cd tutou-agent
+uv sync
+uv run tutou
+```
+
+The existing Hermes state layout and configuration remain in use during this
+phase so inherited features stay compatible.
+
+<details>
+<summary><strong>Upstream Hermes installer reference</strong></summary>
+
+> The commands in this section install upstream Hermes Agent, not Tutou Agent.
+> They are retained temporarily as a compatibility and implementation reference.
 
 ### Linux, macOS, WSL2, Termux
 
@@ -100,21 +126,23 @@ If attestation says "Verification succeeded" and the last line prints `True`, yo
 
 For more context, see the upstream Astral reports: [astral-sh/uv#13553](https://github.com/astral-sh/uv/issues/13553), [astral-sh/uv#15011](https://github.com/astral-sh/uv/issues/15011), [astral-sh/uv#10079](https://github.com/astral-sh/uv/issues/10079).
 
+</details>
+
 ---
 
 ## Getting Started
 
 ```bash
-hermes              # Interactive CLI — start a conversation
-hermes model        # Choose your LLM provider and model
-hermes tools        # Configure which tools are enabled
-hermes config set   # Set individual config values
-hermes config get   # Print individual config values
-hermes gateway      # Start the messaging gateway (Telegram, Discord, etc.)
-hermes setup        # Run the full setup wizard (configures everything at once)
-hermes claw migrate # Migrate from OpenClaw (if coming from OpenClaw)
-hermes update       # Update to the latest version
-hermes doctor       # Diagnose any issues
+tutou              # Interactive CLI — start a conversation
+tutou model        # Choose your LLM provider and model
+tutou tools        # Configure which tools are enabled
+tutou config set   # Set individual config values
+tutou config get   # Print individual config values
+tutou gateway      # Start the messaging gateway (Telegram, Discord, etc.)
+tutou setup        # Run the full setup wizard (configures everything at once)
+tutou claw migrate # Migrate from OpenClaw (if coming from OpenClaw)
+tutou update       # Update to the latest version
+tutou doctor       # Diagnose any issues
 ```
 
 📖 **[Full documentation →](https://hermes-agent.nousresearch.com/docs/)**
@@ -131,10 +159,10 @@ Hermes works with whatever provider you want — that's not changing. But if you
 One command from a fresh install:
 
 ```bash
-hermes setup --portal
+tutou setup --portal
 ```
 
-That logs you in via OAuth, sets Nous as your provider, and turns on the Tool Gateway. Check what's wired up any time with `hermes portal info`. Full details on the [Tool Gateway docs page](https://hermes-agent.nousresearch.com/docs/user-guide/features/tool-gateway).
+That logs you in via OAuth, sets Nous as your provider, and turns on the Tool Gateway. Check what's wired up any time with `tutou portal info`. Full details on the [Tool Gateway docs page](https://hermes-agent.nousresearch.com/docs/user-guide/features/tool-gateway).
 
 You can still bring your own keys per-tool whenever you want — the gateway is per-backend, not all-or-nothing.
 
@@ -142,11 +170,11 @@ You can still bring your own keys per-tool whenever you want — the gateway is 
 
 ## CLI vs Messaging Quick Reference
 
-Hermes has two entry points: start the terminal UI with `hermes`, or run the gateway and talk to it from Telegram, Discord, Slack, WhatsApp, Signal, or Email. Once you're in a conversation, many slash commands are shared across both interfaces.
+Tutou Agent has two entry points: start the terminal UI with `tutou`, or run the gateway and talk to it from Telegram, Discord, Slack, WhatsApp, Signal, or Email. Once you're in a conversation, many slash commands are shared across both interfaces.
 
 | Action                         | CLI                                           | Messaging platforms                                                              |
 | ------------------------------ | --------------------------------------------- | -------------------------------------------------------------------------------- |
-| Start chatting                 | `hermes`                                      | Run `hermes gateway setup` + `hermes gateway start`, then send the bot a message |
+| Start chatting                 | `tutou`                                       | Run `tutou gateway setup` + `tutou gateway start`, then send the bot a message  |
 | Start fresh conversation       | `/new` or `/reset`                            | `/new` or `/reset`                                                               |
 | Change model                   | `/model [provider:model]`                     | `/model [provider:model]`                                                        |
 | Set a personality              | `/personality [name]`                         | `/personality [name]`                                                            |

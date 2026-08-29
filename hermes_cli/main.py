@@ -9447,7 +9447,14 @@ def _hermes_exe_shims(scripts_dir: Path) -> list[Path]:
     if not _is_windows():
         return []
 
-    names = set(_load_console_script_names()) or {"hermes", "hermes-agent", "hermes-acp"}
+    names = set(_load_console_script_names()) or {
+        "tutou",
+        "tutou-agent",
+        "tutou-acp",
+        "hermes",
+        "hermes-agent",
+        "hermes-acp",
+    }
     # The gateway shim is not a [project.scripts] entry point, but older
     # update/install paths still rewrite and quarantine it.
     names.add("hermes-gateway")
@@ -10065,6 +10072,42 @@ def _interpreter_scripts_dir() -> Path | None:
     return exe.parent if exe.parent.is_dir() else None
 
 
+def _target_has_legacy_distribution(
+    install_cmd_prefix: list[str], env: dict[str, str] | None
+) -> bool:
+    """Probe the actual install target for any legacy ``hermes-agent`` metadata."""
+    target = _resolve_install_target_python(install_cmd_prefix, env) or Path(sys.executable)
+    probe = """import importlib.metadata as m, sys
+try:
+    m.distribution("hermes-agent")
+except m.PackageNotFoundError:
+    sys.exit(0)
+else:
+    sys.exit(42)
+"""
+    clean_env = dict(os.environ)
+    if env:
+        clean_env.update(env)
+    clean_env.pop("PYTHONPATH", None)
+    clean_env.pop("PYTHONHOME", None)
+    result = subprocess.run(
+        [str(target), "-c", probe],
+        cwd=tempfile.gettempdir(),
+        env=clean_env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode == 42:
+        return True
+    if result.returncode == 0:
+        return False
+    raise RuntimeError(
+        "could not inspect the target Python environment for legacy hermes-agent metadata: "
+        f"{(result.stderr or result.stdout or 'probe failed').strip()}"
+    )
+
+
 def _install_python_dependencies_with_optional_fallback(
     install_cmd_prefix: list[str],
     *,
@@ -10090,6 +10133,11 @@ def _install_python_dependencies_with_optional_fallback(
     installs (#71510 fixed the ZIP path, #83335 fixed lazy-deps; this closes the
     shared helper for the remaining callers).
     """
+    if _target_has_legacy_distribution(install_cmd_prefix, env):
+        raise RuntimeError(
+            "legacy hermes-agent metadata exists in the target environment; "
+            "create a fresh Tutou Agent virtual environment before updating"
+        )
     scripts_dir = _venv_scripts_dir() if _is_windows() else None
 
     # A pip / site-packages install has no PROJECT_ROOT/venv; the caller still
@@ -12935,6 +12983,7 @@ def cmd_monitoring(args):
 
     if action == "status":
         from agent.monitoring import otlp_exporter
+        from hermes_cli.install_hints import optional_extra_install_hint
 
         gh_raw = mon.get("gateway_health_export")
         gh: dict = gh_raw if isinstance(gh_raw, dict) else {}
@@ -12960,7 +13009,7 @@ def cmd_monitoring(args):
         else:
             print("  OTLP endpoint:  not configured (monitoring.export.otlp)")
         print(f"  OTel SDK:       {'installed' if otlp_exporter.is_available() else 'not installed'} "
-              f"(optional extra: hermes-agent[otlp])")
+              f"(optional extra; {optional_extra_install_hint('otlp')})")
         print("\n  Scope: gateway service health + redacted diagnostics only.")
         print("  No prompts, messages, tool args/results, usage analytics, or traces.")
         return

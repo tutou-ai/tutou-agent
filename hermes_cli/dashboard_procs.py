@@ -13,6 +13,7 @@ patches on ``hermes_cli.main`` resolve unchanged.
 """
 
 import os
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -713,11 +714,29 @@ def _is_desktop_local_serve_cmdline(command: str) -> bool:
     --port 9119``) must never match — those are operator-managed remote
     backends and may legitimately run with ppid 1 under launchd/nohup.
     """
-    cmd = command.lower()
-    if "serve" not in cmd:
+    try:
+        raw_tokens = shlex.split(command, posix=False)
+    except ValueError:
+        raw_tokens = command.split()
+    tokens = [token.strip("\"'").replace("\\", "/").lower() for token in raw_tokens]
+    if "serve" not in tokens:
         return False
-    if "hermes" not in cmd and "hermes_cli" not in cmd:
+    cli_names = {"tutou", "tutou.exe", "hermes", "hermes.exe"}
+    first = tokens[0].rsplit("/", 1)[-1] if tokens else ""
+    has_entrypoint = first in cli_names
+    python_launcher = first.startswith("python")
+    if python_launcher and len(tokens) >= 2:
+        has_entrypoint = tokens[1].rsplit("/", 1)[-1] in cli_names
+    has_module = bool(
+        python_launcher
+        and (
+            (len(tokens) >= 3 and tokens[1] == "-m" and tokens[2] == "hermes_cli.main")
+            or (len(tokens) >= 2 and tokens[1].endswith("/hermes_cli/main.py"))
+        )
+    )
+    if not (has_entrypoint or has_module):
         return False
+    cmd = " ".join(tokens)
     # Ephemeral desktop bind: host loopback + port 0 (exact tokens).
     has_loopback = (
         "--host 127.0.0.1" in cmd

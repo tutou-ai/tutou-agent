@@ -27,6 +27,12 @@ def test_desktop_local_serve_shape_matches_ephemeral_loopback():
     assert _is_desktop_local_serve_cmdline(
         "/venv/bin/hermes serve --host=127.0.0.1 --port=0"
     )
+    assert _is_desktop_local_serve_cmdline(
+        "tutou serve --isolated --host 127.0.0.1 --port 0"
+    )
+    assert _is_desktop_local_serve_cmdline(
+        "/venv/bin/tutou serve --host=127.0.0.1 --port=0"
+    )
 
 
 def test_desktop_local_serve_shape_spares_fixed_port_and_non_serve():
@@ -39,6 +45,15 @@ def test_desktop_local_serve_shape_spares_fixed_port_and_non_serve():
     assert not _is_desktop_local_serve_cmdline("hermes gateway run --replace")
     assert not _is_desktop_local_serve_cmdline(
         "vim notes about hermes serve --port 0"
+    )
+    assert not _is_desktop_local_serve_cmdline(
+        "/home/tutou/bin/python /tmp/unrelated.py serve --host 127.0.0.1 --port 0"
+    )
+    assert not _is_desktop_local_serve_cmdline(
+        "python /tmp/tutou-agent-backup.py serve --host 127.0.0.1 --port 0"
+    )
+    assert not _is_desktop_local_serve_cmdline(
+        "python /tmp/unrelated.py tutou serve --host 127.0.0.1 --port 0"
     )
 
 

@@ -9,6 +9,8 @@
 { inputs, ... }:
 {
   flake.overlays.default = final: _: {
+    tutou-agent = inputs.self.packages.${final.stdenv.hostPlatform.system}.default;
+    # Compatibility alias for existing NixOS/Home Manager configurations.
     hermes-agent = inputs.self.packages.${final.stdenv.hostPlatform.system}.default;
   };
 }

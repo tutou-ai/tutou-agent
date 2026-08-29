@@ -9,7 +9,7 @@ Notes:
   * The destination is operator-configured; this module only sends to that
     endpoint. No default destination ships.
   * ``opentelemetry-sdk`` + ``opentelemetry-exporter-otlp-proto-http`` are an
-    optional extra (``pip install hermes-agent[otlp]``), imported lazily so the
+    optional extra (``uv sync --extra otlp`` from the Tutou checkout), imported lazily so the
     dependency is only required when OTLP export is actually used.
   * ``headers_env`` maps a header name to an environment variable name; values
     are read from the environment at export time and never logged or stored.
@@ -26,6 +26,8 @@ from __future__ import annotations
 import logging
 import os
 from typing import Any, Callable, Dict, List, Optional
+
+from hermes_cli.install_hints import optional_extra_install_hint
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +77,7 @@ def _require_sdk(*, auto_install: bool = True, prompt: bool = True):
     except Exception as e:  # ImportError or partial install
         raise OTLPUnavailable(
             "OTLP export requires the optional dependency. Install with:\n"
-            "    pip install 'hermes-agent[otlp]'\n"
+            f"    {optional_extra_install_hint('otlp')}\n"
             f"(import error: {e})"
         )
 
@@ -251,7 +253,7 @@ def start_streaming(
         _require_sdk(prompt=False)
     except OTLPUnavailable:
         logger.warning("monitoring.export.otlp.enabled but the OTel SDK could not "
-                       "be installed/imported; install 'hermes-agent[otlp]'")
+                       "be installed/imported; %s", optional_extra_install_hint("otlp"))
         return None
     from agent.monitoring.emitter import get_emitter
     streamer = OTLPStreamer(config, event_filter=event_filter)

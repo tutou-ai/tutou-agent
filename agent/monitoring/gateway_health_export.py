@@ -596,9 +596,12 @@ def start_gateway_health_export(config: Dict[str, Any]) -> GatewayHealthExportRu
         try:
             sdk = _require_metrics_sdk(prompt=False)
         except Exception:
+            from hermes_cli.install_hints import optional_extra_install_hint
+
             logger.warning(
                 "monitoring.gateway_health_export.enabled but OTLP SDK is unavailable; "
-                "install 'hermes-agent[otlp]'",
+                "%s",
+                optional_extra_install_hint("otlp"),
                 exc_info=True,
             )
             return GatewayHealthExportRuntime(enabled=False, reason="otlp_unavailable")

@@ -25,6 +25,7 @@ class StaleVirtualEnvTest(unittest.TestCase):
             return None
 
         with mock.patch.object(main_mod, "_run_quarantined_install", fake_quarantine), \
+             mock.patch.object(main_mod, "_target_has_legacy_distribution", return_value=False), \
              mock.patch.object(main_mod, "_verify_console_scripts_installed", fake_verify), \
              mock.patch.object(main_mod, "_venv_scripts_dir", return_value=None), \
              mock.patch.object(main_mod, "_is_windows", return_value=is_windows), \

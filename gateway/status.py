@@ -465,12 +465,20 @@ def _gateway_command_subcommand(command: str | None) -> str | None:
         if basename in ("hermes-gateway", "hermes-gateway.exe"):
             return "run"
 
-    joined = " ".join(tokens)
-    has_gateway_entry = (
-        "hermes_cli.main" in joined
-        or "hermes_cli/main.py" in joined
-        or any(t.rsplit("/", 1)[-1] in ("hermes", "hermes.exe") for t in tokens)
-    )
+    first = tokens[0].rsplit("/", 1)[-1]
+    cli_names = {"tutou", "tutou.exe", "hermes", "hermes.exe"}
+    has_gateway_entry = first in cli_names
+    python_launcher = first.startswith("python")
+    if python_launcher and len(tokens) >= 2:
+        has_gateway_entry = tokens[1].rsplit("/", 1)[-1] in cli_names
+    if python_launcher and len(tokens) >= 3 and tokens[1] == "-m":
+        has_gateway_entry = (
+            tokens[2] == "hermes_cli.main"
+            or tokens[2].endswith("/hermes_cli/main.py")
+            or tokens[2] == "hermes_cli/main.py"
+        )
+    if python_launcher and len(tokens) >= 2 and tokens[1].endswith("/hermes_cli/main.py"):
+        has_gateway_entry = True
     if not has_gateway_entry:
         return None
 

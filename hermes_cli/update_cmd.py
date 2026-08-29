@@ -1821,8 +1821,16 @@ def _restore_state_db_from_snapshot(state_path: Path, snap_state: Path) -> bool:
     return bool(restored.get("valid"))
 
 
+def _official_zip_url(branch: str) -> str:
+    return f"https://github.com/tutou-ai/tutou-agent/archive/refs/heads/{branch}.zip"
+
+
+def _official_zip_root(branch: str) -> str:
+    return f"tutou-agent-{branch}"
+
+
 def _update_via_zip(args, *, had_desktop_app_before_update: bool = False) -> bool:
-    """Update Hermes Agent by downloading a ZIP archive.
+    """Update Tutou Agent by downloading its official ZIP archive.
 
     Used on Windows when git file I/O is broken (antivirus, NTFS filter
     drivers causing 'Invalid argument' errors on file creation).
@@ -1859,14 +1867,12 @@ def _update_via_zip(args, *, had_desktop_app_before_update: bool = False) -> boo
         )
         _m().sys.exit(1)
     _abort_zip_update_if_dirty_tree()
-    zip_url = (
-        f"https://github.com/NousResearch/hermes-agent/archive/refs/heads/{branch}.zip"
-    )
+    zip_url = _official_zip_url(branch)
 
     print("→ Downloading latest version...")
-    tmp_dir = tempfile.mkdtemp(prefix="hermes-update-")
+    tmp_dir = tempfile.mkdtemp(prefix="tutou-update-")
     try:
-        zip_path = os.path.join(tmp_dir, f"hermes-agent-{branch}.zip")
+        zip_path = os.path.join(tmp_dir, f"tutou-agent-{branch}.zip")
         urlretrieve(zip_url, zip_path)
 
         print("→ Extracting...")
@@ -1896,8 +1902,8 @@ def _update_via_zip(args, *, had_desktop_app_before_update: bool = False) -> boo
                     )
             zf.extractall(tmp_dir)
 
-        # GitHub ZIPs extract to hermes-agent-<branch>/
-        extracted = os.path.join(tmp_dir, f"hermes-agent-{branch}")
+        # GitHub ZIPs extract to tutou-agent-<branch>/
+        extracted = os.path.join(tmp_dir, _official_zip_root(branch))
         if not os.path.isdir(extracted):
             # Try to find it
             for d in os.listdir(tmp_dir):
@@ -2598,13 +2604,13 @@ def _discard_stashed_changes(
     return True
 
 OFFICIAL_REPO_URLS = {
-    "https://github.com/NousResearch/hermes-agent.git",
-    "git@github.com:NousResearch/hermes-agent.git",
-    "https://github.com/NousResearch/hermes-agent",
-    "git@github.com:NousResearch/hermes-agent",
+    "https://github.com/tutou-ai/tutou-agent.git",
+    "git@github.com:tutou-ai/tutou-agent.git",
+    "https://github.com/tutou-ai/tutou-agent",
+    "git@github.com:tutou-ai/tutou-agent",
 }
 
-OFFICIAL_REPO_URL = "https://github.com/NousResearch/hermes-agent.git"
+OFFICIAL_REPO_URL = "https://github.com/tutou-ai/tutou-agent.git"
 
 SKIP_UPSTREAM_PROMPT_FILE = ".skip_upstream_prompt"
 
@@ -2740,8 +2746,8 @@ def _sync_with_upstream_if_needed(
             return False
 
         print()
-        print("ℹ Your fork is not tracking the official Hermes repository.")
-        print("  This means you may miss updates from NousResearch/hermes-agent.")
+        print("ℹ Your fork is not tracking the official Tutou Agent repository.")
+        print("  This means you may miss updates from tutou-ai/tutou-agent.")
         print()
 
         if assume_yes or (
@@ -2751,7 +2757,7 @@ def _sync_with_upstream_if_needed(
             # without persisting the decline so interactive runs still get asked.
             print("  Skipping upstream setup (non-interactive run).")
             print(
-                "  Add it later with: git remote add upstream https://github.com/NousResearch/hermes-agent.git"
+                f"  Add it later with: git remote add upstream {OFFICIAL_REPO_URL}"
             )
             return False
 
@@ -2776,16 +2782,14 @@ def _sync_with_upstream_if_needed(
         if response in {"", "y", "yes"}:
             print("→ Adding upstream remote...")
             if _add_upstream_remote(git_cmd, cwd):
-                print(
-                    "  ✓ Added upstream: https://github.com/NousResearch/hermes-agent.git"
-                )
+                print(f"  ✓ Added upstream: {OFFICIAL_REPO_URL}")
                 has_upstream = True
             else:
                 print("  ✗ Failed to add upstream remote. Skipping upstream sync.")
                 return False
         else:
             print(
-                "  Skipped. Run 'git remote add upstream https://github.com/NousResearch/hermes-agent.git' to add later."
+                f"  Skipped. Run 'git remote add upstream {OFFICIAL_REPO_URL}' to add later."
             )
             _mark_skip_upstream_prompt()
             return False
@@ -7566,9 +7570,8 @@ def _cmd_update_impl(args, gateway_mode: bool):
             use_zip_update = True
         else:
             print("✗ Not a git repository. Please reinstall:")
-            print(
-                "  curl -fsSL https://hermes-agent.nousresearch.com/install.sh | bash"
-            )
+            print("  git clone https://github.com/tutou-ai/tutou-agent.git")
+            print("  cd tutou-agent && uv sync")
             sys.exit(1)
 
     # On Windows, git can fail with "unable to write loose object file: Invalid argument"

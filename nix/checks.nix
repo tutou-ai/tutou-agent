@@ -155,7 +155,13 @@ json.dump(sorted(leaf_paths(DEFAULT_CONFIG)), sys.stdout, indent=2)
         # On Linux the runtime checks below already depend on the package,
         # but this ensures darwin builders also build it during flake check.
         build-package = pkgs.runCommand "hermes-build-package" { } ''
-          echo "PASS: package built at ${hermes-agent}"
+          for exe in tutou tutou-agent tutou-acp hermes hermes-agent hermes-acp; do
+            test -x "${hermes-agent}/bin/$exe" || {
+              echo "missing packaged executable: $exe" >&2
+              exit 1
+            }
+          done
+          echo "PASS: package built at ${hermes-agent} with Tutou and legacy executables"
           mkdir -p $out
           echo "ok" > $out/result
         '';

@@ -264,21 +264,22 @@ class TestPackaging:
     """Verify Bedrock remains a declared lazy optional dependency."""
 
     @staticmethod
-    def _optional_dependencies():
+    def _project():
         import tomllib
         from pathlib import Path
 
         content = (Path(__file__).parent.parent.parent / "pyproject.toml").read_text()
-        return tomllib.loads(content)["project"]["optional-dependencies"]
+        return tomllib.loads(content)["project"]
 
     def test_bedrock_extra_exists(self):
-        extras = self._optional_dependencies()
+        extras = self._project()["optional-dependencies"]
         assert "bedrock" in extras
         assert any(dep.startswith("boto3==") for dep in extras["bedrock"])
 
     def test_bedrock_is_not_eager_installed_by_all_extra(self):
-        extras = self._optional_dependencies()
-        assert "hermes-agent[bedrock]" not in extras["all"]
+        project = self._project()
+        extras = project["optional-dependencies"]
+        assert f"{project['name']}[bedrock]" not in extras["all"]
 
 
 # ---------------------------------------------------------------------------

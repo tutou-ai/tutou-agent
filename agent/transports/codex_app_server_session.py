@@ -1283,10 +1283,10 @@ def _has_turn_aborted_marker(text: str) -> bool:
 
 
 def _get_hermes_version() -> str:
-    """Best-effort Hermes version string for codex's userAgent line."""
+    """Best-effort runtime version string for codex's userAgent line."""
     try:
-        from importlib.metadata import version
+        from hermes_cli import __version__
 
-        return version("hermes-agent")
+        return __version__
     except Exception:  # pragma: no cover
         return "0.0.0"
