@@ -1,0 +1,52 @@
+[Unit]
+Description=Tutou Agent live dashboard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tutou-agent-live
+Group=tutou-agent-live
+WorkingDirectory=/opt/agent.tutou.ai
+EnvironmentFile=/etc/tutou-agent/live.env
+Environment=HOME=/var/lib/tutou-agent-live
+Environment=TUTOU_LIVE_DB=/var/lib/tutou-agent-live/live-events.db
+Environment=UV_CACHE_DIR=/var/lib/tutou-agent-live/uv-cache
+StateDirectory=tutou-agent-live
+StateDirectoryMode=0750
+ReadWritePaths=/var/lib/tutou-agent-live
+UMask=0027
+
+# Filesystem, kernel, device, and privilege isolation. StateDirectory remains
+# writable for the live dashboard database and uv's runtime cache.
+NoNewPrivileges=true
+PrivateDevices=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectClock=true
+ProtectControlGroups=true
+ProtectHostname=true
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectProc=invisible
+ProcSubset=pid
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RemoveIPC=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+SystemCallArchitectures=native
+
+ExecStart=/usr/bin/env uv run --no-sync uvicorn services.live_dashboard.app:app --host 127.0.0.1 --port 8791
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=30s
+
+[Install]
+WantedBy=multi-user.target

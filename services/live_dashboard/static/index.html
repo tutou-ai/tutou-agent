@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'">
+  <title>Tutou Agent · Canlı Durum</title>
+  <link rel="stylesheet" href="/live/style.css">
+  <script src="/live/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#dashboard">İçeriğe geç</a>
+  <header class="topbar">
+    <div class="brand" aria-label="Tutou Agent canlı paneli">
+      <span class="brand-mark" aria-hidden="true">T</span>
+      <div><strong>Tutou Agent</strong><span>/live operasyon paneli</span></div>
+    </div>
+    <div class="status-cluster" aria-live="polite">
+      <span id="connection-status" class="status status-waiting">Bağlantı bekleniyor</span>
+      <span id="auth-status" class="status status-muted">Kimlik doğrulanmadı</span>
+    </div>
+  </header>
+
+  <main id="dashboard" class="dashboard">
+    <section class="hero panel" aria-labelledby="goal-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Ana Hedef</p><h1 id="goal-title">Canlı veri bekleniyor</h1></div>
+        <span id="last-updated" class="timestamp">Henüz güncellenmedi</span>
+      </div>
+      <div class="progress-row">
+        <progress id="goal-progress" max="100" value="0">0%</progress>
+        <strong id="goal-progress-label">%0</strong>
+      </div>
+    </section>
+
+    <section class="auth-panel panel" aria-labelledby="token-title">
+      <div>
+        <p class="eyebrow">Güvenli Oturum</p>
+        <h2 id="token-title">Erişim Anahtarı</h2>
+        <p class="hint">Anahtar yalnızca bu sekmenin oturum belleğinde tutulur.</p>
+      </div>
+      <form id="token-form" class="token-form" autocomplete="off">
+        <label for="token-input">API anahtarı</label>
+        <div class="token-actions">
+          <input id="token-input" name="token" type="password" autocomplete="off" spellcheck="false" placeholder="Anahtarı girin" aria-describedby="token-help">
+          <button type="submit">Bağlan</button>
+          <button id="token-clear" class="button-secondary" type="button">Temizle</button>
+        </div>
+        <small id="token-help">URL'ye veya kalıcı tarayıcı belleğine yazılmaz.</small>
+      </form>
+    </section>
+
+    <div class="metric-grid">
+      <section class="panel" aria-labelledby="agents-title">
+        <div class="section-heading"><h2 id="agents-title">Aktif Ajanlar</h2><span id="agent-count" class="count">0</span></div>
+        <ul id="active-agents" class="item-list"><li class="empty">Aktif ajan yok</li></ul>
+      </section>
+      <section class="panel" aria-labelledby="queue-title">
+        <div class="section-heading"><h2 id="queue-title">Bekleyen İş Akışları</h2><span id="queue-count" class="count">0</span></div>
+        <ul id="queued-workstreams" class="item-list"><li class="empty">Bekleyen iş yok</li></ul>
+      </section>
+      <section class="panel" aria-labelledby="completed-title">
+        <div class="section-heading"><h2 id="completed-title">Tamamlanan İşler</h2><span id="completed-count" class="count">0</span></div>
+        <ul id="completed-workstreams" class="item-list"><li class="empty">Tamamlanan iş yok</li></ul>
+      </section>
+    </div>
+
+    <div class="detail-grid">
+      <section class="panel events-panel" aria-labelledby="events-title">
+        <div class="section-heading"><h2 id="events-title">Son Olaylar</h2><span class="live-dot" aria-label="canlı"></span></div>
+        <ol id="recent-events" class="event-list"><li class="empty">Olay bekleniyor</li></ol>
+      </section>
+      <aside class="side-stack">
+        <section class="panel danger-panel" aria-labelledby="blockers-title">
+          <div class="section-heading"><h2 id="blockers-title">Hatalar ve Engeller</h2><span id="blocker-count" class="count count-danger">0</span></div>
+          <ul id="blockers" class="item-list"><li class="empty">Engel bildirilmedi</li></ul>
+        </section>
+        <section class="panel" aria-labelledby="sha-title">
+          <div class="section-heading"><h2 id="sha-title">Sürüm Matrisi</h2></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Kayıt</th><th>SHA</th><th>Durum</th></tr></thead>
+              <tbody id="sha-matrix">
+                <tr><td>PC</td><td><code>—</code></td><td>Bekleniyor</td></tr>
+                <tr><td>GitHub</td><td><code>—</code></td><td>Bekleniyor</td></tr>
+                <tr><td>VPS</td><td><code>—</code></td><td>Bekleniyor</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <noscript>Canlı panel için JavaScript etkin olmalıdır.</noscript>
+</body>
+</html>

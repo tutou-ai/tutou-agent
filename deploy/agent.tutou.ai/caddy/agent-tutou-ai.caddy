@@ -1,0 +1,29 @@
+agent.tutou.ai {
+	header {
+		-Server
+		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		Cross-Origin-Opener-Policy "same-origin"
+		Content-Security-Policy "default-src 'self'; connect-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
+	}
+
+	@live path /live /live/* /api/live/*
+	handle @live {
+		reverse_proxy 127.0.0.1:8791 {
+			# Flush streamed/SSE events immediately and prevent intermediary caches.
+			flush_interval -1
+			header_down Cache-Control "no-store, no-cache, must-revalidate"
+			header_down Pragma "no-cache"
+			header_down Expires "0"
+			header_down X-Accel-Buffering "no"
+		}
+	}
+
+	handle {
+		root * /srv/agent.tutou.ai/current
+		file_server
+	}
+}
