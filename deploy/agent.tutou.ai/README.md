@@ -10,6 +10,20 @@ static site at `/srv/agent.tutou.ai/current`, and install `uv` and Caddy. The
 main `/etc/caddy/Caddyfile` must import
 `/etc/caddy/conf.d/*.caddy`.
 
+Install the managed Python inside `/opt/agent.tutou.ai` before starting the
+hardened service. A root-owned uv Python under `/root/.local/share` is not
+traversable by `tutou-agent-live` and will fail with `Permission denied`:
+
+```bash
+cd /opt/agent.tutou.ai
+UV_PYTHON_INSTALL_DIR=/opt/agent.tutou.ai/.python /usr/local/bin/uv python install 3.13
+UV_PYTHON_INSTALL_DIR=/opt/agent.tutou.ai/.python /usr/local/bin/uv sync --locked --python 3.13
+readlink -f /opt/agent.tutou.ai/.venv/bin/python3
+```
+
+The resolved interpreter must be under `/opt/agent.tutou.ai/.python/`, not
+under `/root` or another user's home.
+
 ## Install
 
 Create the unprivileged service identity and the two required directories:

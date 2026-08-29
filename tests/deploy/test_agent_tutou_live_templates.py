@@ -193,3 +193,17 @@ def test_readme_has_local_and_public_health_commands() -> None:
     }
     missing = sorted(command for command in required_commands if command not in readme)
     assert not missing, f"missing health commands: {missing}"
+
+
+def test_readme_installs_service_accessible_managed_python() -> None:
+    readme = _template_text(DEPLOY_README)
+
+    assert (
+        "UV_PYTHON_INSTALL_DIR=/opt/agent.tutou.ai/.python "
+        "/usr/local/bin/uv python install 3.13" in readme
+    )
+    assert (
+        "UV_PYTHON_INSTALL_DIR=/opt/agent.tutou.ai/.python "
+        "/usr/local/bin/uv sync --locked --python 3.13" in readme
+    )
+    assert "readlink -f /opt/agent.tutou.ai/.venv/bin/python3" in readme
